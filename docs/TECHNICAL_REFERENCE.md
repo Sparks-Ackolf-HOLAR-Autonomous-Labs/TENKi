@@ -26,7 +26,7 @@ Secondary / negative-control results:
 - **Experiments 09, 11**: operational extensions (mixed-source flip, multi-domain).
 - **Experiments 12, 13**: "what to do instead" — ensemble aggregation and async MF scheduling.
 
-The **synthesis table** (§ 20) and **decision rule** (§ 21) are the primary outputs for
+The **synthesis table** (§ 19) and **decision rule** (§ 20) are the primary outputs for
 practitioners. Read those first if you want actionable guidance.
 
 ## Novelty Claim
@@ -67,9 +67,9 @@ blocked by irreducible bias.
 16. [Async Multi-Fidelity Optimizer (Experiment 13)](#16-async-multi-fidelity-optimizer-experiment-13)
 17. [Knowledge-Space Transfer Results from the Parent PEGKi Benchmark](#17-knowledge-space-transfer-results-from-the-parent-pegki-benchmark)
 18. [TENKi-1000 Experiment Series](#18-tenki-1000-experiment-series)
-19. [Open Questions](#19-open-questions)
-20. [Synthesis Table](#20-synthesis-table)
-21. [Decision Rule](#21-decision-rule)
+19. [Synthesis Table](#19-synthesis-table)
+20. [Decision Rule](#20-decision-rule)
+21. [Open Questions and Current Status](#21-open-questions-and-current-status)
 
 ---
 
@@ -462,7 +462,7 @@ studies (one symmetric + one asymmetric) may be sufficient — not K = 15.
 
 ### Convergence Results
 
-The table below reports TENKi-1000 convergence results. Small differences from the synthesis table (Section 20) are bootstrap/seed effects.
+The table below reports TENKi-1000 convergence results. Small differences from the synthesis table (Section 19) are bootstrap/seed effects.
 
 | Frugal source | N=1 | N=5 | N=10 | N=20 | N=100 | Residual gap at N=100 |
 |---------------|-----|-----|------|------|-------|-----------------------|
@@ -474,7 +474,7 @@ The table below reports TENKi-1000 convergence results. Small differences from t
 | study_a (mixbox-RYB) | 0.194 | 0.366 | 0.457 | 0.516 | 0.703 | 0.297 |
 | study_c (KM-mixbox) | 0.130 | 0.263 | 0.338 | 0.439 | 0.644 | 0.356 |
 
-Full-data bias floors are reported in the synthesis table (Section 20); this table stops at N=100.
+Full-data bias floors are reported in the synthesis table (Section 19); this table stops at N=100.
 
 ### Key Findings
 
@@ -482,7 +482,7 @@ Full-data bias floors are reported in the synthesis table (Section 20); this tab
 
 2. **Best unpaired low-budget donor = study_b**: Drawing from the spectral-exclusive region gives the best low-budget approximation of the spectral reference among unpaired sources. Mixbox has the stronger N=100 value and is the best paired practical source.
 
-3. **Quantity beats diversity when one source is good**: with a fixed total budget, spreading measurements across weak sources dilutes the strongest source. Diversity should only be used when there is independent evidence of complementary spatial coverage.
+3. **Quantity beats broad diversity at very low budget**: with a fixed total budget, spreading measurements across many weak sources dilutes the strongest source. Later exact-budget reruns show that a small quality-screened donor set can become useful once the budget is large enough for each donor to receive stable samples.
 
 ### Minimum Robots to Match High-Fidelity
 
@@ -1155,8 +1155,9 @@ Tau plateaus at ~0.83 — the physics ceiling for this source pool against spect
 | 500 | 0.9531 | 0.8853 | **−0.0678** |
 | 1000| 0.9494 | 0.8822 | **−0.0672** |
 
-**Ensemble beats swarm at every N** — the opposite of expectations from the 3-source result.
-Swarm advantage is consistently negative and grows worse as N increases.
+In this original Experiment 12 aggregation run, **ensemble beats swarm at every N** — the
+opposite of expectations from the 3-source result.  Swarm advantage is consistently
+negative and grows worse as N increases.
 
 **Swarm weight variability (std across targets)** by source:
 
@@ -1181,9 +1182,18 @@ from "locally good."
 Ensemble (1/K equal weight = 1/8) is robust to this failure mode: it dilutes the bad local
 recommendations from low-ceiling sources without amplifying them.
 
-**Conclusion**: swarm advantage requires sources that are locally *better*, not just locally
-*different*. With the current pool mixing high-ceiling (ryb=0.944, mixbox=0.889) and
-low-ceiling (study_c=0.722) sources, the swarm's kNN-based local weighting is net-harmful.
+**Original conclusion**: swarm advantage seemed to require sources that are locally
+*better*, not just locally *different*. With this pool mixing high-ceiling
+(ryb=0.944, mixbox=0.889) and low-ceiling (study_c=0.722) sources, the original
+kNN-based local weighting was net-harmful.
+
+**Correction from Q10 / Experiment 23**: after excluding spectral from predictor pools
+and enforcing exact Hamilton budget allocation, adaptive swarm weighting does beat equal
+ensemble in the LF-only `all8` and `studies_only` pools.  The local rank-gap diagnostic
+is still zero, so the gain is not evidence for true spatial specialists; it is more
+consistent with adaptive suppression of weak sources.  Experiment 12 is therefore kept
+as an implementation-history ablation, while Experiment 23 is the current fixed-budget
+comparison.
 
 ### Fidelity Interpretation
 
@@ -1619,8 +1629,10 @@ Q3 diversity (fixed N_TOTAL=10 — diversity vs budget isolated):
 | 5 | 0.631 | — |
 | 6 | 0.610 | all studies |
 
-**Monotonically decreasing** — with truly fixed budget, concentration always beats diversity.
-Adding more study types only dilutes the 10 available experiments.
+**Monotonically decreasing at N_TOTAL=10** — in this low-budget equal-allocation test,
+concentration beats broad diversity.  The later Q3 rerun (Experiment 17) refines this:
+the optimum remains concentrated at N_total=10 but shifts to a two-source donor set
+(`mixbox + study_b`) at N_total=20.
 
 Q3b (quantity vs diversity at same N_total, best single = mixbox):
 
@@ -1634,6 +1646,10 @@ Q3b (quantity vs diversity at same N_total, best single = mixbox):
 
 These Q3b rows are saved in the canonical artifact under
 `q3b_quantity_vs_diversity` in `results/tenki_1000/frugal_twin_convergence.json`.
+
+Interpretation: broad equal allocation is harmful when it gives weak sources the same
+budget as strong donors.  This does not rule out small, quality-screened donor sets or
+quality-aware allocation at moderate budget.
 
 **Experiment 08 — Classical vs Hybrid MFMC (TENKi-1000, mixbox LF, r=100, N_bootstrap=500)**
 
@@ -1757,11 +1773,18 @@ color-mixing domain and much weaker in low-variance or near-single-score domains
 
 **Experiment 12 — Ensemble vs Swarm (K=8 LF sources)**
 
-See §15 for full table. **Ensemble beats swarm at every N** when all 8 non-spectral sources are
-included. Swarm advantage degrades from −0.016 at N=10 to −0.068 at N=500.
+See §15 for full table. In the original Experiment 12 implementation, **ensemble beats
+swarm at every N** when all 8 non-spectral sources are included. Swarm advantage
+degrades from −0.016 at N=10 to −0.068 at N=500.
 
 Weight variability: study_c (std=0.354) and study_b_reverse (std=0.321) are the most spatially
 variable, but their low ceilings (0.722, 0.833) mean the swarm's local upweighting harms overall tau.
+
+This result is retained as the original Experiment 12 ablation.  The corrected Q10 rerun
+(Experiment 23) uses exact Hamilton allocation, excludes spectral from all predictor pools,
+and finds that adaptive swarm weighting can beat equal ensemble in the current LF pools.
+The two results answer different questions: Experiment 12 tests the original aggregation
+implementation; Experiment 23 tests the corrected LF-only, fixed-budget swarm comparison.
 
 **Experiment 13 — Async MF optimizer (budget=500, fidelity=[5,10,20,50])**
 
@@ -1778,7 +1801,7 @@ LF source beliefs: ryb (effective_fidelity=0.932) > mixbox (0.914) > km (0.781).
 
 ---
 
-## 20. Synthesis Table
+## 19. Synthesis Table
 
 One row per knowledge source. All values from canonical `results/tenki_1000/` artifacts.
 
@@ -1819,7 +1842,7 @@ One row per knowledge source. All values from canonical `results/tenki_1000/` ar
 
 ---
 
-## 21. Decision Rule
+## 20. Decision Rule
 
 Given a candidate LF source *s* and a budget *B* (in HF-equivalent units, cost ratio *r*):
 
@@ -1845,10 +1868,15 @@ Step 3 - Choose branch based on task.
     Prefer: ryb (lowest bias floor = 0.056).
 
 Step 4 - Fixed-budget allocation.
-  Concentration beats diversity for generalist sources (Exp 07, Layer B):
-    Spend all LF budget on the single best source for your task (Steps 1-3).
-    Do NOT split budget across multiple sources unless you have evidence of
-    complementary spatial coverage (set-op databases).
+  Start concentrated at very low budget:
+    Spend LF budget on the single best donor until each additional source can
+    receive enough samples to contribute a stable ranking signal.
+  At moderate budget:
+    Test a small donor set.  In the current TENKi-1000 pool, study_b alone wins
+    at N_total=10, but mixbox+study_b wins at N_total=20.
+  Avoid broad equal allocation:
+    Equal spreading across many weak sources remains harmful; use quality-aware
+    weights or a small screened donor set instead.
 
 Step 5 - Compute MFMC allocation ratio.
   n_LF / n_HF = sqrt(r) * |rho| / sqrt(1 - rho^2)
@@ -1869,107 +1897,171 @@ Step 6 - Validate empirically.
 | ceiling < required_tau | Source permanently blocked; HF only |
 | ranking task + donor > 0 + ceiling ok | Hybrid branch; prefer study_b or mixbox |
 | scalar estimation + paired source available | Classical branch; prefer ryb |
-| fixed budget, multiple sources | Concentrate on best single source |
+| fixed budget, very low N | Concentrate on best single donor |
+| fixed budget, moderate N | Test small donor set or quality-aware allocation |
 | hybrid tau > HF-only tau | MF is helping; maintain LF allocation |
 | hybrid tau <= HF-only tau | MF is not helping; redirect budget to HF |
 
 ---
 
-## 19. Open Questions
+## 21. Open Questions and Current Status
 
-### Answered
+This section now separates three levels of closure:
 
-- **Venn region volumes**: Experiment 01 maps all pairwise (and multi-engine) intersection,
-  difference, and complement volumes.  The 4-engine intersection non-empty status is now
-  empirically determined.
-- **Directional donor/receiver structure**: Experiment 02 produces the full asymmetric tau
-  matrix at N=1, N=5, N=10, and full N across 7 studies. spectral and study_b are top donors;
-  study_a and study_c are receivers (§14, Experiment 02 results).
-- **Flip feasibility**: Experiment 03 tests both the external (vs spectral) and mutual
-  scenarios for every ordered pair.  Experiment 04 maps permanent-gap vs flippable pairs.
-- **Async MF optimizer baseline**: Experiment 13 (ensemble_mf): 81 jobs, best_tau=0.769 at
-  budget=50 with spectral HF + mixbox/km LF (§16).
-- **Parent PEGKi transfer analysis**: 210 transfer pairs computed; 171/210 robust (DRO δ=0.5);
-  Conjecture 2.1 PARTIALLY_SUPPORTED, Conjecture 2.2 NOT_SUPPORTED (§17).
-- **TENKi-1000 series**: All experiments 02–3 re-run with 1000-target databases and
-  N=[10,20,50,100,200,500,1000] (§18).
+1. **Resolved for the current TENKi-1000 pool**: the result is supported by the
+   nine available databases (`spectral`, three generalist LF engines, and five
+   set-operation studies).
+2. **Refined but not universal**: the result changes an earlier heuristic but
+   still depends on the current source pool, budget grid, or aggregation model.
+3. **Still open**: the question requires the planned eight additional mirror
+   databases or a broader materials-domain validation set.
 
-- **Intransitive donor cycles** (Q8 below): Experiment 04 over the full 9-study set
-  confirms no 3-cycles — the donor hierarchy is fully transitive.  Blade-Chest cycle
-  detection is not needed for this dataset.
+The corrected open-question experiments are `experiments/15_q1_mirror_pair_test.py`
+through `experiments/23_q10_swarm_specialists.py`; results are in
+`TENKi/results/tenki_1000/`.
 
-- **Fixed-budget diversity (Q4 partial)**: Experiment 07 with truly fixed N_TOTAL shows
-  tau monotonically *decreases* as k increases (0.794–0.610 for k=1–6).  With
-  generalist sources, adding studies always dilutes the best source rather than
-  complementing it.  Rho-proportional allocation would face the same ceiling: there is
-  no complementary region to exploit.  The question remains open for genuinely
-  heterogeneous (set-op) source pools.
+### Status Summary
 
-- **Ensemble vs swarm at K=8 (Q7 partial)**: Experiment 12 shows ensemble beats swarm
-  at every N when all 8 non-spectral sources are included.  High local weight variability
-  (std=0.242−0.354 for set-op sources) does not translate to local quality — swarm
-  upweights distinctive-but-worse sources in their distinctive regions.  Ensemble's
-  equal-weight dilution is robust; swarm advantage requires genuine local specialists.
+| ID | Question | Current answer | Status |
+|---|---|---|---|
+| Q1 | Are mirror set-operation studies interchangeable? | No. Both tested mirror pairs are asymmetric. | Resolved for existing mirror pairs |
+| Q2 | What epsilon gives approximate symmetry? | Volume symmetry is easy; quality symmetry is not achieved by the current pool. | Refined; full mirror pool still open |
+| Q3 | Does the fixed-budget optimum concentrate? | It depends on budget: k=1 at N=10, k=2 at N=20. | Refined |
+| Q4 | Does quality-aware diversity help? | Yes under exact Hamilton allocation, but oracle single-source allocation still dominates most practical budgets. | Resolved for current pool |
+| Q5 | Do hard targets carry different transfer information? | No strong difficulty effect under the current difficulty metric. | Resolved for current pool |
+| Q6 | Is per-policy rho useful? | Yes. Spearman identifies robust/fragile policy transfer; Pearson gives policy-specific MFMC ratios. | Resolved for paired sources |
+| Q7 | Does TrueSkill2 recover the TENKi taxonomy? | Mostly yes (`tau=0.929` vs TENKi ordering); it is a cross-check, not a replacement. | Resolved as interpretation |
+| Q8 | Are there intransitive donor cycles? | No cycles detected in the 9-study set. | Resolved for current pool |
+| Q9 | Does flip N* depend on target difficulty? | No conditional easy/hard specialist pattern was found. | Resolved for current pool |
+| Q10 | Does swarm aggregation beat ensemble aggregation? | Often yes after excluding spectral from predictor pools, but not because of true local specialists. | Refined; mechanism open |
 
-- **Async MF at scale**: Experiment 13 with budget=500 achieves best_tau=1.000
-  (complete ranking recovery), with LF fidelity beliefs: ryb (0.932) > mixbox (0.914)
-  > km (0.781).  The ensemble_mf policy converges reliably given sufficient budget.
+### Corrected Answers
 
-### Still Open
+**Q1 — Mirror-pair symmetry** (`experiments/15_q1_mirror_pair_test.py`)  
+The two available mirror pairs are asymmetric. `study_b` vs `study_b_reverse`
+has a large N=10 transfer gap (`0.802` vs `0.521`) with non-overlapping
+bootstrap intervals. `study_c` vs `study_c_reverse` has a smaller N=10 gap but
+different ceilings (`0.722` vs `0.833`). Directional set operations therefore
+cannot be treated as interchangeable coverage mirrors.
 
-Addressed by `experiments/14_open_questions_matrix.py` in phase order.
-Run `--phases 0` first to see which databases need generating before Q1–Q3 are possible.
+**Q2 — Epsilon-symmetry threshold** (`experiments/16_q2_epsilon_symmetry.py`)  
+The corrected target counter finds 60 target files for every current source.
+Volume symmetry and quality symmetry separate cleanly:
 
-**Phase 1 — Source geometry (requires mirror databases)**
+- `eps_volume <= 0.05` is achieved at `k=2` by `{study_b, study_b_reverse}`
+  because both databases have equal target counts.
+- `eps_tau <= 0.25` is not achieved by any current subset. The best available
+  mirror pair still has `eps_tau = 0.364`, driven by the N=10 quality gap
+  `study_b=0.806` vs `study_b_reverse=0.512`.
 
-1. **Mirror studies (Q1)**: Generate the 8 missing directed complement databases so every
-   ordered engine pair has both directions, then verify: mirror symmetry is supported only
-   if bootstrap CIs for tau@N=10 overlap and ceilings are comparable.
-   *Blocked until*: `spectral_diff_mixbox`, `mixbox_diff_spectral`, `spectral_diff_km`,
-   `km_diff_spectral`, `mixbox_diff_ryb`, `ryb_diff_mixbox`, `km_diff_ryb`, `ryb_diff_km`
-   are generated (see `sources_manifest.json` for commands).
+This answers the current-pool version of the question: equal-volume mirror
+coverage does not imply equal transfer quality. The full engine-permutation
+version remains open until the eight planned mirror databases in
+`sources_manifest.json` are generated and scored.
 
-2. **Epsilon-symmetry threshold (Q2)**: Report smallest collection size k achieving
-   ε ≤ 0.25, 0.10, 0.05, where ε = max relative volume imbalance over all mirror pairs.
-   *Blocked until*: same mirror databases as Q1.
+**Q3 — Nash equilibrium under fixed budget** (`experiments/17_q3_nash_equilibrium.py`)  
+The concentration rule is budget-dependent. At `N_total=10`, the optimum is the
+single source `study_b` (`tau=0.796`). At `N_total=20`, the optimum spreads to
+`mixbox + study_b` (`tau=0.843`), beating the best single source by `0.026`.
+The earlier statement "always concentrate on one source" should therefore be
+weakened to: concentrate at very low budget; allow a small donor set once budget
+is high enough for each donor to receive useful samples. The full 15-region
+Nash question remains open.
 
-3. **Nash equilibrium under full symmetry (Q3)**: Fixed-budget source-selection game over
-   all available Venn atoms.  Does the optimum stay concentrated on 1–2 high-quality
-   sources or spread once the full symmetric region set exists?
-   *Currently answerable on the 9-source baseline; answer will update as mirrors are added.*
+**Q4 — Quality-aware diversity allocation** (`experiments/18_q4_diversity_allocation.py`)  
+The rerun uses exact Hamilton allocation, so total budget is conserved. Quality
+aware allocation helps the current pool, especially when weak sources are
+included. In the `all8` pool at `N_total=10`, equal allocation gives `tau=0.601`
+and global-tau weighting gives `tau=0.627`. At `N_total=20`, inverse-variance
+weighting reaches `tau=0.737` vs `0.656` for equal allocation. The best oracle
+single-source allocation remains stronger than practical quality-aware schemes
+at low budget, while an oracle two-source allocation becomes strongest at
+moderate/high budget.
 
-**Phase 2 — Quality-aware diversity (requires set-op sources)**
+**Q5 — Per-robot information weighting by difficulty** (`experiments/19_q5_robot_difficulty.py`)  
+The easy/medium/hard split based on minimum HF score does not reveal meaningful
+specialization. Per-source tau at N=1 varies only weakly across difficulty bins,
+and difficulty-weighted sampling changes N=10 tau by at most about `0.01`.
 
-4. **Quality-aware diversity allocation (Q4)**: Compare equal, global_rho, local_rho,
-   inverse_variance, and oracle_upper_bound allocations at fixed N_total.
-   Quality-aware advantage is only meaningful when sources have spatially heterogeneous
-   quality — confirmed absent with 4 generalist engines; re-test once mirror set-op sources
-   with genuine local specialists are in the pool.
+**Q6 — Per-policy rho for MFMC** (`experiments/20_q6_per_policy_rho.py`)  
+The corrected analysis separates the two roles of correlation:
 
-5. **Swarm with true local specialists (Q10)**: Re-run ensemble vs swarm on three pools
-   (generalists only / all 9 / specialist set-op only).  Success criterion: swarm beats
-   equal ensemble AND the high-weighted local sources are locally better, not just
-   distinctive.
+- **Spearman rho** identifies policy-level rank-transfer robustness. Robust
+  policies are `neural_network`, `random_forest`, and `ucb1_bandit`; fragile
+  policies include `bayesian_ei`, `bayesian_ucb`, `grid_search`, and
+  `simulated_annealing`.
+- **Pearson rho** is used for the classical MFMC allocation ratio. The global
+  paired-source ratios are `mixbox=0.661`, `km=0.433`, and `ryb=0.724`.
 
-**Phase 3 — Finer diagnostics (runnable now)**
+The policy-specific ratios vary enough (`ratio_std > 0.5` for all paired
+sources) that a single global LF/HF ratio is a rough prior, not an optimal
+policy-level allocation.
 
-6. **Per-robot information weighting (Q5)**: Does target difficulty (easy/medium/hard
-   quantile split by best-achievable HF score) affect how much transferable signal one
-   robot carries?  Expected: harder targets carry more noise, not more signal.
+**Q7 — TrueSkill2 multi-team rating** (`experiments/21_q7_trueskill2.py`)  
+TrueSkill2 reproduces the TENKi donor taxonomy well (`tau=0.929` against the
+canonical ordering), with only a minor swap between `km` and `study_b_reverse`.
+It is useful as a compact cross-check of source reputation, but it does not
+replace TENKi's ceiling, bias-floor, or paired/unpaired branch diagnostics.
 
-7. **Per-policy rho for MFMC (Q6)**: Compute rho_p per policy for each paired LF source
-   (mixbox, km, ryb).  Identify robust policies (rho > global mean + 0.05) vs fragile ones.
+**Q8 — Intransitive donor cycles**  
+Experiment 04 over the 9-study set found no 3-cycles. The donor hierarchy is
+transitive for this benchmark, so Blade-Chest cycle modeling is not needed for
+the current colour-mixing data.
 
-8. **Flip N* vs target difficulty (Q9)**: Stratify flip curves by difficulty quantile.
-   A receiver that flips on easy targets but not hard ones should be described as
-   conditionally useful, not globally useful.
+**Q9 — Flip N* sensitivity to target difficulty** (`experiments/22_q9_flip_difficulty.py`)  
+No source shows a conditionally useful easy-target-only pattern or a hard-target
+specialist pattern. `study_b`, `mixbox`, `ryb`, and `study_c_reverse` flip in
+all bins; `study_c` remains a permanent gap.
 
-**Phase 4 — Rating layer (optional, requires pip install trueskill)**
+**Q10 — Swarm advantage with local specialists** (`experiments/23_q10_swarm_specialists.py`)  
+The corrected rerun excludes `spectral` from all predictor pools and uses exact
+Hamilton allocation. Swarm weighting beats equal ensemble in the `all8` and
+`studies_only` pools, with N=10 gains of `+0.113` and `+0.115`, respectively.
+For the generalist-only pool (`mixbox`, `km`, `ryb`), the result is mixed:
+swarm helps at N=2, 5, 20, and 50, but not at N=1 or N=10.
 
-9. **TrueSkill2 multi-team rating (Q7)**: Teams = (source, n_robots); match outcome =
-   tau vs spectral.  TrueSkill2 is useful only if its inferred mu recovers the same
-   taxonomy as TENKi (donors high, receivers low, high-ceiling slow-convergers distinct
-   from low-ceiling bad donors).
+The local-specialist diagnostic reports a local rank gap of `0.000` for every
+pool. The swarm gain therefore does **not** demonstrate true spatial
+specialists; it shows that adaptive kNN weighting can suppress globally weak
+sources even when the current local-specialist metric sees no region-specific
+source reversal.
+
+### New Open Questions
+
+1. **Full mirror-pool symmetry**: Generate and score the eight planned mirror
+   databases (`spectral_diff_mixbox`, `mixbox_diff_spectral`,
+   `spectral_diff_km`, `km_diff_spectral`, `mixbox_diff_ryb`,
+   `ryb_diff_mixbox`, `km_diff_ryb`, `ryb_diff_km`). Then rerun Q1 and Q2 to
+   determine whether tau-epsilon symmetry is impossible in principle or only
+   absent from the current partial pool.
+
+2. **Full 15-region Nash equilibrium**: The current Q3 result shows a
+   budget-dependent shift from one source to two sources, but it does not answer
+   the full engine-permutation problem. After all Venn atoms are populated,
+   rerun the fixed-budget game to test whether the optimum remains sparse or
+   spreads across more than two regions.
+
+3. **Budget phase boundary**: The observed transition between `N_total=10` and
+   `N_total=20` should be mapped more finely. Sweep `N_total` over
+   `[5, 8, 10, 12, 15, 20, 30, 50, 100]` and report the smallest budget where
+   two-source allocation reliably beats the best single donor.
+
+4. **Practical vs oracle allocation**: Q4 shows quality-aware allocation helps,
+   but oracle single-source and oracle two-source policies still define a large
+   upper bound. The next question is whether an implementable online allocation
+   policy can approach the oracle without using held-out HF knowledge.
+
+5. **What is swarm weighting exploiting?** Q10's swarm advantage appears even
+   with local rank gap `0.000`. The current local-specialist metric may be too
+   coarse, or the swarm may simply be performing adaptive global source
+   suppression. Diagnose this by logging per-target/per-policy source weights,
+   comparing against global-tau weighting, and testing a no-kNN quality-weighted
+   baseline.
+
+6. **Policy-specific MFMC allocation in the classical branch**: Q6 identifies
+   large per-policy rho variation, but Experiment 08 still uses source-level
+   allocation. Re-run the classical branch with policy-specific Pearson rho and
+   compare per-policy MSE and ranking tau against the global-ratio branch.
 
 ---
 
@@ -2046,13 +2138,17 @@ uv run python extended/gamut_symmetry/experiments/13_async_mf_optimizer.py \
     --fidelity-levels 3 12 \
     --budget-total 500
 
-# --- Open questions matrix (exp 14): runs all 9 still-open questions ---
-# Phase 0: validate substrate (always runs; shows what is missing)
-uv run python extended/gamut_symmetry/experiments/14_open_questions_matrix.py --phases 0
-
-# Phase 1+: full run against 9-source baseline (phases 1-3 work without mirror databases)
-uv run python extended/gamut_symmetry/experiments/14_open_questions_matrix.py \r
-    --db-prefix output/db_1000_ --phases 0 1 2 3 4
+# --- Individual open-question/status experiments (Exp 15-23, April 2026) ---
+# Run from color_mixing_lab root with: uv run python extended/gamut_symmetry/TENKi/<script>
+uv run python extended/gamut_symmetry/TENKi/experiments/15_q1_mirror_pair_test.py
+uv run python extended/gamut_symmetry/TENKi/experiments/16_q2_epsilon_symmetry.py
+uv run python extended/gamut_symmetry/TENKi/experiments/17_q3_nash_equilibrium.py
+uv run python extended/gamut_symmetry/TENKi/experiments/18_q4_diversity_allocation.py
+uv run python extended/gamut_symmetry/TENKi/experiments/19_q5_robot_difficulty.py
+uv run python extended/gamut_symmetry/TENKi/experiments/20_q6_per_policy_rho.py
+uv run python extended/gamut_symmetry/TENKi/experiments/21_q7_trueskill2.py  # requires: uv pip install trueskill
+uv run python extended/gamut_symmetry/TENKi/experiments/22_q9_flip_difficulty.py
+uv run python extended/gamut_symmetry/TENKi/experiments/23_q10_swarm_specialists.py
 
 # --- Generate 8 missing mirror databases (needed for Q1, Q2 in phase 1) ---
 # From color_mixing_lab root; generate_shared_targets.py must have been run first.

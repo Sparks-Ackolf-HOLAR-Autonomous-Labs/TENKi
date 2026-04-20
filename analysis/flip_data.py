@@ -56,7 +56,7 @@ def load_study_scores(
     StudyScores with empty policy_scores if the database does not exist.
     """
     _repo_root = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "..")
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")
     )
     policy_scores: dict[str, list[float]] = {}
     policies_dir = os.path.join(_repo_root, db_path, "policies")
@@ -230,7 +230,7 @@ def load_paired_data(
     PairedTargetData with empty records if either database is missing.
     """
     _repo_root = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "..")
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")
     )
 
     def _read_by_exp_id(db: str) -> dict[str, dict[int, float]]:
@@ -324,7 +324,7 @@ def load_trial_records(
         If given, load at most this many experiments per policy type.
     """
     _repo_root = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "..")
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")
     )
     policies_dir = os.path.join(_repo_root, db_path, "policies")
     if not os.path.exists(policies_dir):
