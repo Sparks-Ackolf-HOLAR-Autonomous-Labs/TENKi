@@ -35,13 +35,8 @@ Thumbs.db
 # Manuscript (not for public repo)
 writing/
 
-# Large generated result directories (reproducible from experiments)
-results/tenki_1000/
-results/exp12_1000/
-results/exp12_104targets/
-results/_tmp_*/
-results/runs/
-results/gamut_cache/
+# Generated result directories (reproducible from experiments)
+results/
 
 # Compiled LaTeX and template PDFs in writing/
 writing/*.pdf
