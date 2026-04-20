@@ -1,0 +1,256 @@
+{
+  "_schema": "1.0",
+  "_description": "Canonical TENKi source manifest. One entry per study database.",
+  "_fields": {
+    "name":               "Canonical short key used in all experiment scripts",
+    "db_path":            "Path relative to the color_mixing_lab repo root",
+    "engine_a":           "Primary engine (for single-engine or set-op A-side)",
+    "engine_b":           "Second engine for set-op studies; null for single-engine",
+    "set_op":             "single | difference | intersection | complement | union",
+    "ks_type":            "K_H (hybrid) | K_E (empirical) | K_T (theoretical) | K_H_OVERLAP",
+    "paired_with_spectral": "True iff targets share index with db_1000_spectral",
+    "rel_cost":           "Approximate cost relative to spectral=1.0",
+    "is_atomic_venn_region": "True iff this DB covers exactly one Venn atom",
+    "status":             "baseline | planned | generated",
+    "generate_cmd":       "Command to (re)generate this database from the repo root"
+  },
+
+  "baseline_9": [
+    {
+      "name": "spectral",
+      "db_path": "output/db_1000_spectral",
+      "engine_a": "spectral",
+      "engine_b": null,
+      "set_op": "single",
+      "ks_type": "K_H",
+      "paired_with_spectral": true,
+      "rel_cost": 1.0,
+      "is_atomic_venn_region": false,
+      "status": "baseline",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --engine spectral --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_1000_spectral"
+    },
+    {
+      "name": "mixbox",
+      "db_path": "output/db_1000_mixbox",
+      "engine_a": "mixbox",
+      "engine_b": null,
+      "set_op": "single",
+      "ks_type": "K_E",
+      "paired_with_spectral": true,
+      "rel_cost": 0.3,
+      "is_atomic_venn_region": false,
+      "status": "baseline",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --engine mixbox --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_1000_mixbox"
+    },
+    {
+      "name": "km",
+      "db_path": "output/db_1000_km",
+      "engine_a": "kubelka_munk",
+      "engine_b": null,
+      "set_op": "single",
+      "ks_type": "K_E",
+      "paired_with_spectral": true,
+      "rel_cost": 0.4,
+      "is_atomic_venn_region": false,
+      "status": "baseline",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --engine kubelka_munk --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_1000_km"
+    },
+    {
+      "name": "ryb",
+      "db_path": "output/db_1000_ryb",
+      "engine_a": "coloraide_ryb",
+      "engine_b": null,
+      "set_op": "single",
+      "ks_type": "K_T",
+      "paired_with_spectral": true,
+      "rel_cost": 0.2,
+      "is_atomic_venn_region": false,
+      "status": "baseline",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --engine coloraide_ryb --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_1000_ryb"
+    },
+    {
+      "name": "study_a",
+      "db_path": "output/db_1000_study_a_artist_consensus",
+      "engine_a": "mixbox",
+      "engine_b": "coloraide_ryb",
+      "set_op": "intersection",
+      "ks_type": "K_H_OVERLAP",
+      "paired_with_spectral": false,
+      "rel_cost": 0.25,
+      "is_atomic_venn_region": true,
+      "status": "baseline",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --set-op intersection --engine-a mixbox --engine-b coloraide_ryb --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_1000_study_a_artist_consensus"
+    },
+    {
+      "name": "study_b",
+      "db_path": "output/db_1000_study_b_physics_vs_artist",
+      "engine_a": "spectral",
+      "engine_b": "coloraide_ryb",
+      "set_op": "difference",
+      "ks_type": "K_T",
+      "paired_with_spectral": false,
+      "rel_cost": 0.6,
+      "is_atomic_venn_region": true,
+      "status": "baseline",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --set-op difference --engine-a spectral --engine-b coloraide_ryb --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_1000_study_b_physics_vs_artist"
+    },
+    {
+      "name": "study_b_reverse",
+      "db_path": "output/db_1000_study_b_reverse_artist_vs_physics",
+      "engine_a": "coloraide_ryb",
+      "engine_b": "spectral",
+      "set_op": "difference",
+      "ks_type": "K_T",
+      "paired_with_spectral": false,
+      "rel_cost": 0.2,
+      "is_atomic_venn_region": true,
+      "status": "baseline",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --set-op difference --engine-a coloraide_ryb --engine-b spectral --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_1000_study_b_reverse_artist_vs_physics"
+    },
+    {
+      "name": "study_c",
+      "db_path": "output/db_1000_study_c_oilpaint_vs_fooddye",
+      "engine_a": "kubelka_munk",
+      "engine_b": "mixbox",
+      "set_op": "difference",
+      "ks_type": "K_E",
+      "paired_with_spectral": false,
+      "rel_cost": 0.35,
+      "is_atomic_venn_region": true,
+      "status": "baseline",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --set-op difference --engine-a kubelka_munk --engine-b mixbox --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_1000_study_c_oilpaint_vs_fooddye"
+    },
+    {
+      "name": "study_c_reverse",
+      "db_path": "output/db_1000_study_c_reverse_fooddye_vs_oilpaint",
+      "engine_a": "mixbox",
+      "engine_b": "kubelka_munk",
+      "set_op": "difference",
+      "ks_type": "K_E",
+      "paired_with_spectral": false,
+      "rel_cost": 0.3,
+      "is_atomic_venn_region": true,
+      "status": "baseline",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --set-op difference --engine-a mixbox --engine-b kubelka_munk --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_1000_study_c_reverse_fooddye_vs_oilpaint"
+    }
+  ],
+
+  "mirror_8": [
+    {
+      "name": "spectral_diff_mixbox",
+      "db_path": "output/db_spectral_diff_mixbox",
+      "engine_a": "spectral",
+      "engine_b": "mixbox",
+      "set_op": "difference",
+      "ks_type": "K_H",
+      "paired_with_spectral": false,
+      "rel_cost": 0.7,
+      "is_atomic_venn_region": true,
+      "status": "planned",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --set-op difference --engine-a spectral --engine-b mixbox --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_spectral_diff_mixbox"
+    },
+    {
+      "name": "mixbox_diff_spectral",
+      "db_path": "output/db_mixbox_diff_spectral",
+      "engine_a": "mixbox",
+      "engine_b": "spectral",
+      "set_op": "difference",
+      "ks_type": "K_E",
+      "paired_with_spectral": false,
+      "rel_cost": 0.3,
+      "is_atomic_venn_region": true,
+      "status": "planned",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --set-op difference --engine-a mixbox --engine-b spectral --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_mixbox_diff_spectral"
+    },
+    {
+      "name": "spectral_diff_km",
+      "db_path": "output/db_spectral_diff_km",
+      "engine_a": "spectral",
+      "engine_b": "kubelka_munk",
+      "set_op": "difference",
+      "ks_type": "K_H",
+      "paired_with_spectral": false,
+      "rel_cost": 0.7,
+      "is_atomic_venn_region": true,
+      "status": "planned",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --set-op difference --engine-a spectral --engine-b kubelka_munk --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_spectral_diff_km"
+    },
+    {
+      "name": "km_diff_spectral",
+      "db_path": "output/db_km_diff_spectral",
+      "engine_a": "kubelka_munk",
+      "engine_b": "spectral",
+      "set_op": "difference",
+      "ks_type": "K_E",
+      "paired_with_spectral": false,
+      "rel_cost": 0.4,
+      "is_atomic_venn_region": true,
+      "status": "planned",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --set-op difference --engine-a kubelka_munk --engine-b spectral --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_km_diff_spectral"
+    },
+    {
+      "name": "mixbox_diff_ryb",
+      "db_path": "output/db_mixbox_diff_ryb",
+      "engine_a": "mixbox",
+      "engine_b": "coloraide_ryb",
+      "set_op": "difference",
+      "ks_type": "K_E",
+      "paired_with_spectral": false,
+      "rel_cost": 0.3,
+      "is_atomic_venn_region": true,
+      "status": "planned",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --set-op difference --engine-a mixbox --engine-b coloraide_ryb --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_mixbox_diff_ryb"
+    },
+    {
+      "name": "ryb_diff_mixbox",
+      "db_path": "output/db_ryb_diff_mixbox",
+      "engine_a": "coloraide_ryb",
+      "engine_b": "mixbox",
+      "set_op": "difference",
+      "ks_type": "K_T",
+      "paired_with_spectral": false,
+      "rel_cost": 0.2,
+      "is_atomic_venn_region": true,
+      "status": "planned",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --set-op difference --engine-a coloraide_ryb --engine-b mixbox --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_ryb_diff_mixbox"
+    },
+    {
+      "name": "km_diff_ryb",
+      "db_path": "output/db_km_diff_ryb",
+      "engine_a": "kubelka_munk",
+      "engine_b": "coloraide_ryb",
+      "set_op": "difference",
+      "ks_type": "K_E",
+      "paired_with_spectral": false,
+      "rel_cost": 0.4,
+      "is_atomic_venn_region": true,
+      "status": "planned",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --set-op difference --engine-a kubelka_munk --engine-b coloraide_ryb --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_km_diff_ryb"
+    },
+    {
+      "name": "ryb_diff_km",
+      "db_path": "output/db_ryb_diff_km",
+      "engine_a": "coloraide_ryb",
+      "engine_b": "kubelka_munk",
+      "set_op": "difference",
+      "ks_type": "K_T",
+      "paired_with_spectral": false,
+      "rel_cost": 0.2,
+      "is_atomic_venn_region": true,
+      "status": "planned",
+      "generate_cmd": "uv run python scripts/generate_policy_data.py --set-op difference --engine-a coloraide_ryb --engine-b kubelka_munk --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_ryb_diff_km"
+    }
+  ],
+
+  "mirror_pair_definitions": {
+    "_note": "Each entry names a pair (forward, mirror). Both must exist for Q1 mirror-symmetry test.",
+    "pairs": [
+      ["study_b",        "study_b_reverse"],
+      ["study_c",        "study_c_reverse"],
+      ["spectral_diff_mixbox",  "mixbox_diff_spectral"],
+      ["spectral_diff_km",      "km_diff_spectral"],
+      ["mixbox_diff_ryb",       "ryb_diff_mixbox"],
+      ["km_diff_ryb",           "ryb_diff_km"]
+    ]
+  }
+}

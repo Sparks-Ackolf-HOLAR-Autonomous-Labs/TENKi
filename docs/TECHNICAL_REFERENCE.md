@@ -1917,45 +1917,59 @@ Step 6 - Validate empirically.
 
 ### Still Open
 
-1. **Mirror studies**: Generate the 8 missing complement databases
-   (G_RYB \ G_mixbox, G_RYB \ G_spectral, G_mixbox \ G_spectral, etc.) and verify
-   that policies transfer symmetrically to/from mirror pairs.
+Addressed by `experiments/14_open_questions_matrix.py` in phase order.
+Run `--phases 0` first to see which databases need generating before Q1–Q3 are possible.
 
-2. **Approximate symmetry threshold**: At what ε does the 3-study KS-balanced collection
-   achieve approximate engine-permutation symmetry? (Use Venn volumes from exp 01.)
+**Phase 1 — Source geometry (requires mirror databases)**
 
-3. **Nash equilibrium under full symmetry**: If all 15 Venn regions were studied, would
-   the Nash equilibrium shift from 2 databases to more? Or would it still concentrate?
+1. **Mirror studies (Q1)**: Generate the 8 missing directed complement databases so every
+   ordered engine pair has both directions, then verify: mirror symmetry is supported only
+   if bootstrap CIs for tau@N=10 overlap and ceilings are comparable.
+   *Blocked until*: `spectral_diff_mixbox`, `mixbox_diff_spectral`, `spectral_diff_km`,
+   `km_diff_spectral`, `mixbox_diff_ryb`, `ryb_diff_mixbox`, `km_diff_ryb`, `ryb_diff_km`
+   are generated (see `sources_manifest.json` for commands).
 
-4. **Quality-aware diversity allocation (Q3 replacement)**: Rho-proportional `n_i`
-   allocation is only meaningful when sources have spatially heterogeneous quality.
-   Prerequisite: include at least one set-op (intersection/difference) source so that
-   local rho genuinely varies across target regions.  With 4 generalist engines, the
-   experiment is underspecified — diversity always hurts.
+2. **Epsilon-symmetry threshold (Q2)**: Report smallest collection size k achieving
+   ε ≤ 0.25, 0.10, 0.05, where ε = max relative volume imbalance over all mirror pairs.
+   *Blocked until*: same mirror databases as Q1.
 
-5. **Per-robot information weighting**: Use inverse-variance weighting within a study
-   (exp 10 in the planned roadmap).  Do hard-target experiments carry more or less
-   transferable information than easy ones?
+3. **Nash equilibrium under full symmetry (Q3)**: Fixed-budget source-selection game over
+   all available Venn atoms.  Does the optimum stay concentrated on 1–2 high-quality
+   sources or spread once the full symmetric region set exists?
+   *Currently answerable on the 9-source baseline; answer will update as mirrors are added.*
 
-6. **Per-policy rho for MFMC**: Compute rho_p per policy rather than globally (exp 11).
-   Are some policies universally well-correlated across LF/HF (robust policies)?
+**Phase 2 — Quality-aware diversity (requires set-op sources)**
 
-7. **TrueSkill2 multi-team Q3**: Run TrueSkill2 on (study, n_robots) combinations using
-   Kendall tau as the match outcome signal (exp 12).  Does the inferred team skill per
-   study converge to values consistent with empirical rho and bias floor?
+4. **Quality-aware diversity allocation (Q4)**: Compare equal, global_rho, local_rho,
+   inverse_variance, and oracle_upper_bound allocations at fixed N_total.
+   Quality-aware advantage is only meaningful when sources have spatially heterogeneous
+   quality — confirmed absent with 4 generalist engines; re-test once mirror set-op sources
+   with genuine local specialists are in the pool.
 
-8. **Intransitive donor cycles**: Resolved — no cycles in the 9-study set.
+5. **Swarm with true local specialists (Q10)**: Re-run ensemble vs swarm on three pools
+   (generalists only / all 9 / specialist set-op only).  Success criterion: swarm beats
+   equal ensemble AND the high-weighted local sources are locally better, not just
+   distinctive.
 
-9. **Flip N* sensitivity to target difficulty**: N* (robots needed to flip) may differ for
-   easy vs hard target colors.  Per-difficulty flip curves would show whether a receiver
-   can flip earlier on easy targets while remaining a permanent receiver on hard ones.
+**Phase 3 — Finer diagnostics (runnable now)**
 
-10. **Swarm advantage with true local specialists**: The swarm loss at K=8 (exp 12) is
-    explained by high-variability but low-ceiling set-op sources.  Re-run exp 12 with
-    only the 4 generalist engines (no study_a/b/c) or with intersection/difference
-    sources that are both locally distinctive AND locally better than the alternatives.
-    Expected result: swarm advantage re-emerges when spatial quality heterogeneity
-    aligns with spatial weight heterogeneity.
+6. **Per-robot information weighting (Q5)**: Does target difficulty (easy/medium/hard
+   quantile split by best-achievable HF score) affect how much transferable signal one
+   robot carries?  Expected: harder targets carry more noise, not more signal.
+
+7. **Per-policy rho for MFMC (Q6)**: Compute rho_p per policy for each paired LF source
+   (mixbox, km, ryb).  Identify robust policies (rho > global mean + 0.05) vs fragile ones.
+
+8. **Flip N* vs target difficulty (Q9)**: Stratify flip curves by difficulty quantile.
+   A receiver that flips on easy targets but not hard ones should be described as
+   conditionally useful, not globally useful.
+
+**Phase 4 — Rating layer (optional, requires pip install trueskill)**
+
+9. **TrueSkill2 multi-team rating (Q7)**: Teams = (source, n_robots); match outcome =
+   tau vs spectral.  TrueSkill2 is useful only if its inferred mu recovers the same
+   taxonomy as TENKi (donors high, receivers low, high-ceiling slow-convergers distinct
+   from low-ceiling bad donors).
 
 ---
 
@@ -2032,12 +2046,26 @@ uv run python extended/gamut_symmetry/experiments/13_async_mf_optimizer.py \
     --fidelity-levels 3 12 \
     --budget-total 500
 
-# --- Generate missing complement databases (open question 1) ---
-uv run python scripts/generate_policy_data.py \
-    --set-op complement --engine-a mixbox --engine-b coloraide_ryb \
-    --output output/db_study_a_complement
+# --- Open questions matrix (exp 14): runs all 9 still-open questions ---
+# Phase 0: validate substrate (always runs; shows what is missing)
+uv run python extended/gamut_symmetry/experiments/14_open_questions_matrix.py --phases 0
 
-# --- Generate multi-fidelity databases (for Mode B fidelity, open question) ---
+# Phase 1+: full run against 9-source baseline (phases 1-3 work without mirror databases)
+uv run python extended/gamut_symmetry/experiments/14_open_questions_matrix.py \r
+    --db-prefix output/db_1000_ --phases 0 1 2 3 4
+
+# --- Generate 8 missing mirror databases (needed for Q1, Q2 in phase 1) ---
+# From color_mixing_lab root; generate_shared_targets.py must have been run first.
+uv run python scripts/generate_policy_data.py --set-op difference --engine-a spectral --engine-b mixbox --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_spectral_diff_mixbox
+uv run python scripts/generate_policy_data.py --set-op difference --engine-a mixbox --engine-b spectral --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_mixbox_diff_spectral
+uv run python scripts/generate_policy_data.py --set-op difference --engine-a spectral --engine-b kubelka_munk --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_spectral_diff_km
+uv run python scripts/generate_policy_data.py --set-op difference --engine-a kubelka_munk --engine-b spectral --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_km_diff_spectral
+uv run python scripts/generate_policy_data.py --set-op difference --engine-a mixbox --engine-b coloraide_ryb --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_mixbox_diff_ryb
+uv run python scripts/generate_policy_data.py --set-op difference --engine-a coloraide_ryb --engine-b mixbox --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_ryb_diff_mixbox
+uv run python scripts/generate_policy_data.py --set-op difference --engine-a kubelka_munk --engine-b coloraide_ryb --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_km_diff_ryb
+uv run python scripts/generate_policy_data.py --set-op difference --engine-a coloraide_ryb --engine-b kubelka_munk --shared-targets-file output/shared_targets.json --experiments 50 --output output/db_ryb_diff_km
+
+# --- Generate multi-fidelity databases (for Mode B fidelity) ---
 uv run python scripts/generate_policy_data.py --engine spectral --rounds 3  --experiments 5 --output output/db_spectral_r3
 uv run python scripts/generate_policy_data.py --engine spectral --rounds 12 --experiments 5 --output output/db_spectral_r12
 ```
