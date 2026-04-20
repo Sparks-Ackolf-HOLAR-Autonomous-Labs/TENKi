@@ -128,13 +128,13 @@ the spectral engine gamut**. So even the largest gamut (spectral) is a strongly 
 The union G_A ∪ G_B can be partitioned into 3 disjoint pieces:
 
 ```
-G_A ∪ G_B  =  (G_A ∪ G_B)              [intersection: both can reach this]
+G_A ∪ G_B  =  (G_A ∩ G_B)              [intersection: both can reach this]
             ∪ (G_A \ G_B)              [A-only: A can reach, B cannot]
             ∪ (G_B \ G_A)              [B-only: B can reach, A cannot]
 ```
 
 Symmetry assessment:
-- **G_A ∪ G_B** is *symmetric* under A?↔ swap (the same set regardless of labeling)
+- **G_A ∩ G_B** is *symmetric* under A↔B swap (the same set regardless of labeling)
 - **G_A \ G_B** is *asymmetric* — it belongs to A, not B
 - **G_B \ G_A** is *asymmetric* — it belongs to B, not A
 - Together: **1 symmetric + 2 asymmetric = 1 union**
@@ -212,7 +212,7 @@ proportional sampling, not equal representation of engine directions.
 A collection is **KS-balanced** if the three knowledge-space types are equally represented:
 
 ```
-|targets from K_H studies| — |targets from K_E studies| — |targets from K_T studies|
+|targets from K_H studies| ≈ |targets from K_E studies| ≈ |targets from K_T studies|
 ```
 
 This is the most practically relevant criterion for the PEGKí framework because the
@@ -328,14 +328,14 @@ RYB theory — so the low-G,B region that spectral can't reach is excluded.
 ### What's Missing for Full Symmetry?
 
 For the **2-engine case** (mixbox vs RYB), these studies provide:
-- — G_mixbox — G_RYB (Study A)
-- — G_RYB \ G_mixbox (the "RYB-only" complement of Study A — not in the database)
+- G_mixbox ∩ G_RYB (Study A)
+- G_RYB \ G_mixbox (the "RYB-only" complement of Study A — not in the database)
 - (Study A alone covers the symmetric core but not the full partition)
 
 For the **3-engine case** (spectral, RYB, + one of mixbox/KM):
 - 2^3 − 1 = 7 regions needed for exact symmetry
 - Currently have 3 studies — **KS-balanced** (one per type) but **NOT engine-permutation symmetric**
-- Missing: complement differences (RYB — spectral, mixbox — KM, etc.)
+- Missing: complement differences (RYB \ spectral, mixbox \ KM, etc.)
 
 For the **4-engine case**:
 - 2^4 − 1 = 15 regions needed
@@ -380,10 +380,10 @@ spectral physics contributes the *least* distinguishing information.
 
 A collection of K set-operation studies is KS-balanced if and only if:
 ```
-K —3  AND  {K_H_OVERLAP study, K_T study, K_E study} — collection
+K ≥ 3  AND  {K_H_OVERLAP study, K_T study, K_E study} ⊆ collection
 ```
 
-This is achievable with K = 3 for any N —2 engines.
+This is achievable with K = 3 for any N ≥ 2 engines.
 
 **The 3 existing studies satisfy this condition.**
 
@@ -401,7 +401,7 @@ For N = 4 engines: K = 15.
 ### Corollary 8.3 (Asymmetric Complement)
 
 Every asymmetric study D_A = G_A \ G_B has a unique "mirror" D_B = G_B \ G_A.
-Together, D_A — D_B —(G_A ∪ G_B) = G_A ∪ G_B is engine-permutation symmetric for this pair.
+Together, D_A ∪ D_B = (G_A ∪ G_B) is engine-permutation symmetric for this pair.
 
 To make the full collection symmetric for all pairs simultaneously requires all 2^N − 1 pieces.
 
@@ -410,7 +410,7 @@ To make the full collection symmetric for all pairs simultaneously requires all 
 For practical purposes, ε-approximate engine-permutation symmetry holds when:
 
 ```
-? engine pair (i, j):  | Vol(G_i \ G_j) - Vol(G_j \ G_i) | / Vol(G_i — G_j)  <  ε
+∀ engine pair (i, j):  | Vol(G_i \ G_j) - Vol(G_j \ G_i) | / Vol((G_i \ G_j) ∪ (G_j \ G_i))  <  ε
 ```
 
 If this holds for ε ≤ 0.05 (5% imbalance), the studies are approximately symmetric.
@@ -432,7 +432,7 @@ The three KS types map naturally to the Venn decomposition:
 | K_H (hybrid spectral) | Physics-only region: G_spectral that others can't reach | Asymmetric (level 1/4 for 4 engines) |
 | K_E (empirical KM/mixbox) | Empirical-only region: G_KM or G_mixbox unique parts | Asymmetric |
 | K_T (RYB theory) | Theory-only region: G_RYB unique parts | Asymmetric |
-| K_H_OVERLAP | Intersection of multiple engines | Symmetric (level —2/4) |
+| K_H_OVERLAP | Intersection of multiple engines | Symmetric (level 2/4) |
 
 ### The Nash Equilibrium Result
 
@@ -1013,7 +1013,7 @@ The `symmetry_group.py` and `coverage_checker.py` modules are retained for refer
 For every pair of engines (A, B), the gamut union decomposes into three regions:
 
 ```
-intersection   G_A ∪ G_B   fraction of RGB cube reachable by both
+intersection   G_A ∩ G_B   fraction of RGB cube reachable by both
 A-only         G_A \ G_B   fraction reachable by A but not B
 B-only         G_B \ G_A   fraction reachable by B but not A
 ```
