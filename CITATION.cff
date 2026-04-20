@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+title: "TENKi: Donor-Flip Transfer Analysis and Multi-Fidelity Acquisition for Autonomous Materials Systems"
+message: "If you use this software, please cite it using the metadata from this file."
+type: software
+authors:
+  - family-names: "Ackölf"
+    given-names: "Kinston"
+    email: kinston.ackolf.wong@utah.edu
+  - family-names: "Sparks"
+    given-names: "Taylor"
+    email: taylor.sparks@utah.edu
+repository-code: "https://github.com/Sparks-Ackolf-HOLAR-Autonomous-Labs/TENKi"
+license: MIT
+version: 0.3.0
+abstract: >
+  TENKi is a diagnostic extension built on PEGKi that asks whether a cheap low-fidelity
+  source can substitute for an expensive high-fidelity reference when guiding ranked
+  decisions in autonomous materials workflows. It identifies two regimes — permanent-gap
+  sources whose bias floor cannot be overcome by adding data, and flippable sources that
+  can become donors at a finite sample size N* — through three linked analyses: set-based
+  gamut geometry, directional donor-flip transfer tests, and budgeted multi-fidelity
+  acquisition comparisons.
+keywords:
+  - autonomous materials systems
+  - transfer learning
+  - multi-fidelity
+  - donor-flip
+  - Kendall tau
+  - bias floor
+  - active learning

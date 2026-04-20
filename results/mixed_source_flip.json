@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "timestamp": "2026-04-06T04:48:25.960326+00:00",
+    "config": {
+      "hifi": "spectral",
+      "n_values": [
+        1,
+        2,
+        3,
+        5,
+        8,
+        10,
+        15,
+        20,
+        30,
+        50,
+        100
+      ],
+      "n_bootstrap": 200,
+      "flip_eps": 0.01,
+      "score_key": "best_color_distance_mean",
+      "seed": 42
+    },
+    "common_policy_count": 9,
+    "common_policies": [
+      "bayesian_ei",
+      "bayesian_ucb",
+      "evolutionary_strategy",
+      "grid_search",
+      "neural_network",
+      "random_forest",
+      "simulated_annealing",
+      "thompson_sampling",
+      "ucb1_bandit"
+    ],
+    "studies_used": [
+      "spectral",
+      "mixbox",
+      "km",
+      "ryb",
+      "study_a",
+      "study_b",
+      "study_c"
+    ],
+    "missing_studies": [],
+    "max_n_per_study": {
+      "spectral": 104,
+      "mixbox": 104,
+      "km": 104,
+      "ryb": 104,
+      "study_a": 100,
+      "study_b": 100,
+      "study_c": 100
+    }
+  },
+  "ceilings": {
+    "mixbox": 0.7777777777777778,
+    "km": 0.7222222222222222,
+    "ryb": 0.8333333333333334,
+    "study_a": 0.9444444444444445,
+    "study_b": 0.8888888888888888,
+    "study_c": 0.8888888888888888
+  },
+  "results": [
+    {
+      "competitor": "mixbox",
+      "ceiling_competitor": 0.7777777777777778,
+      "flip_n_single": 5,
+      "best_single_source": "study_b",
+      "flip_n_mix": 50,
+      "best_mix_combo": [
+        "ryb",
+        "study_b"
+      ],
+      "mix_beats_single": false
+    },
+    {
+      "competitor": "km",
+      "ceiling_competitor": 0.7222222222222222,
+      "flip_n_single": 2,
+      "best_single_source": "study_b",
+      "flip_n_mix": 10,
+      "best_mix_combo": [
+        "mixbox",
+        "study_b"
+      ],
+      "mix_beats_single": false
+    },
+    {
+      "competitor": "ryb",
+      "ceiling_competitor": 0.8333333333333334,
+      "flip_n_single": 15,
+      "best_single_source": "study_b",
+      "flip_n_mix": 50,
+      "best_mix_combo": [
+        "mixbox",
+        "study_b"
+      ],
+      "mix_beats_single": false
+    },
+    {
+      "competitor": "study_a",
+      "ceiling_competitor": 0.9444444444444445,
+      "flip_n_single": null,
+      "best_single_source": null,
+      "flip_n_mix": null,
+      "best_mix_combo": null,
+      "mix_beats_single": false
+    },
+    {
+      "competitor": "study_b",
+      "ceiling_competitor": 0.8888888888888888,
+      "flip_n_single": null,
+      "best_single_source": null,
+      "flip_n_mix": null,
+      "best_mix_combo": null,
+      "mix_beats_single": false
+    },
+    {
+      "competitor": "study_c",
+      "ceiling_competitor": 0.8888888888888888,
+      "flip_n_single": null,
+      "best_single_source": null,
+      "flip_n_mix": null,
+      "best_mix_combo": null,
+      "mix_beats_single": false
+    }
+  ]
+}

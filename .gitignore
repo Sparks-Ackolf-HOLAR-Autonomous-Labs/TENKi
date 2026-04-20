@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# uv
+.uv/
+.uv-cache/
+
+# Testing / type checking
+.pytest_cache/
+.mypy_cache/
+.hypothesis/
+
+# IDE / tooling
+.vscode/
+.idea/
+*.swp
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large generated result directories (reproducible from experiments)
+results/tenki_1000/
+results/exp12_1000/
+results/exp12_104targets/
+results/_tmp_*/
+results/runs/
+results/gamut_cache/
+
+# Compiled LaTeX and template PDFs in writing/
+writing/*.pdf
+writing/*.aux
+writing/*.log
+writing/*.out
+writing/*.bbl
+writing/*.blg
+writing/*.fls
+writing/*.fdb_latexmk
+writing/*.synctex.gz

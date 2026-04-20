@@ -1,0 +1,29 @@
+[project]
+name = "tenki"
+version = "0.3.0"
+description = "TENKi: Donor-Flip Transfer Analysis and Multi-Fidelity Acquisition for Autonomous Materials Systems."
+requires-python = ">=3.11"
+authors = [
+    { name = "Kinston Ackölf", email = "kinston.ackolf.wong@utah.edu" }
+]
+dependencies = [
+    "numpy>=2.0",
+    "scipy>=1.14",
+    "scikit-learn>=1.6",
+    "matplotlib>=3.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "black>=24.0",
+    "mypy>=1.10",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
