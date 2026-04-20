@@ -462,7 +462,7 @@ studies (one symmetric + one asymmetric) may be sufficient — not K = 15.
 
 ### Convergence Results
 
-The table below reports the current TENKi-1000 convergence artifact. The `N=1` values in the synthesis table (Section 20) come from the regenerated flip-test run; small differences from this Experiment 07 table are bootstrap/seed effects. Use Section 20 for final manuscript numbers.
+The table below reports TENKi-1000 convergence results. Small differences from the synthesis table (Section 20) are bootstrap/seed effects.
 
 | Frugal source | N=1 | N=5 | N=10 | N=20 | N=100 | Residual gap at N=100 |
 |---------------|-----|-----|------|------|-------|-----------------------|
@@ -618,9 +618,9 @@ The empirical results of Experiment 08 should be interpreted with three rules:
    The observed HF/LF crossover budget is an empirical property of this benchmark and this
    combiner, not a theorem inherited from Peherstorfer et al.
 
-### Two Branches: Classical vs Hybrid (v0.3.3+)
+### Two Branches: Classical vs Hybrid
 
-Starting from v0.3.3, Experiment 08 runs two clearly separated branches:
+Experiment 08 uses two clearly separated branches:
 
 **Classical branch** (`--mode classical`)
 - Estimand: per-policy HF mean score `mu_p = E_target[best_cd(HF, target, policy=p)]`
@@ -678,11 +678,6 @@ the MSE plots (multifidelity_mse.png) confirm this.
 > For the paper's primary metric (ranking quality), report hybrid.
 > For any claim about estimating absolute HF performance levels, use classical.
 
-### Legacy Note
-
-Earlier v0.3 text reported Experiment 08 as a direct MFMC result.
-That framing was too strong. The current separation (classical/hybrid branches) makes the
-distinction explicit. Section 11 documents theory and scope; Section 18 documents empirical results.
 
 ### Practical Takeaway
 
@@ -990,23 +985,8 @@ difficulties), BC can detect and model this — something a flat Kendall tau can
 
 ---
 
-## 14. Donor/Receiver Flip Framework (Experiments 01–4, v0.3)
+## 14. Donor/Receiver Flip Framework
 
-### Background: Why Experiments 01–4 Were Rewritten
-
-The original v0.1 experiments 01–4 applied the **octahedral group O_h** (48 elements:
-6 channel permutations ? 8 channel negations) to measure geometric symmetry of individual
-gamuts under RGB channel swaps.  This is mathematically valid but answers a different question:
-
-| Framework | Question | "Symmetric whole" |
-|-----------|----------|-------------------|
-| **O_h group (v0.1)** | How many copies of a gamut tile the RGB cube under channel permutations? | Full [0,255]^3 under crystallographic symmetry |
-| **Set-theoretic (v0.3)** | How many Venn regions of engine gamuts tile the union fairly? | Engine-permutation symmetric Venn partition |
-
-The v0.3 experiments replace 01–4 with the correct foundation.
-The `symmetry_group.py` and `coverage_checker.py` modules are retained for reference.
-
----
 
 ### Experiment 01 — Venn Region Geometry
 
@@ -1126,7 +1106,7 @@ Synthesises 02 and 03 into a taxonomy:
 | `mutual_gap(A, B, N=1)` | `tau_AB(1) − tau_BA(1)` | Who is donor at N=1 in the mutual scenario |
 | `N*(A→B)` | smallest N where `tau_AB(N) > tau_BA(1)` | Robots needed for A to match B's first experiment |
 | `external_centrality(X)` | mean `ext_ceiling(X)` over all Y | Overall donor quality as spectral proxy |
-| `mutual_centrality(X)` | mean `mutual_gap(X?, N=1)` over Y | Net donor advantage at N=1 across all pairs |
+| `mutual_centrality(X)` | mean `mutual_gap(X, N=1)` over Y | Net donor advantage at N=1 across all pairs |
 
 **Cycle detection**: a directed edge A→B is added when `external_gap(A,B) > ε`.
 Cycles in this graph = intransitive donor relationships (rock-paper-scissors).
@@ -1143,7 +1123,7 @@ If no cycles exist, the donor hierarchy is fully transitive (a linear ranking).
 | Weight per source | 1/K (equal, global) | 1 / mean_error(source in kNN(target)) |
 | Spatial awareness | None — same weight at every target | Local — specialist sources get higher weight near targets they handle well |
 | Information needed | Only aggregate tau per source | Per-target errors for each source |
-| Cost | O(K) | O(K ? n_targets) |
+| Cost | O(K) | O(K × n_targets) |
 
 **Ensemble** treats all sources as global peers and averages their policy scores with equal
 weight at every target.  **Swarm** computes a per-target weight for each source based on
@@ -1270,7 +1250,7 @@ In Mode B each fidelity level uses all experiments from its DB (no statistical s
 
 | `--policy-mode` | Method family | Surrogate | Fidelity strategy |
 |---|---|---|---|
-| `ensemble_mf` | Bandit | None | `(effective_fidelity ? source_weight) / runtime` |
+| `ensemble_mf` | Bandit | None | `(effective_fidelity × source_weight) / runtime` |
 | `swarm_mf` | UCB bandit | None | `(effective_fidelity + explore/sqrt(n)) / runtime` |
 | `single_source_mf` | Deterministic sweep | None | All LF fidelities then HF at max |
 | `mfbo` | Bayesian optimization | GP (Matern-2.5) | Cost-aware LCB or EI; round-robin warm-up |
@@ -1283,7 +1263,7 @@ In Mode B each fidelity level uses all experiments from its DB (no statistical s
 r_l = rho_eff,l * sqrt(w_HF / w_l) / sqrt(1 - rho_eff,l^2)
 N_LF = N_HF * r_l
 ```
-where `rho_eff,l = rho_mean,l ? (0.5 + 0.5 ? transfer_usefulness_l)` and `w` is runtime.
+where `rho_eff,l = rho_mean,l × (0.5 + 0.5 × transfer_usefulness_l)` and `w` is runtime.
 If `rho_mean` is not yet available, the implementation falls back to a normalized tau proxy
 during warm-up.
 
@@ -1401,7 +1381,7 @@ Ran on `output/phase3_1000` with all `db_1000_*` and standard datasets included.
 
 ### Transfer Analysis
 
-- **210 ordered transfer pairs** (15 ? 14)
+- **210 ordered transfer pairs** (15 × 14)
 - **171/210 robust** under DRO (STRONG=162, MARGINAL=9, FRAGILE=10, UNSAFE=29)
 - **DRO radius** (calibrated): δ=0.5
 - **Mean safety gap**: 0.116
@@ -1423,7 +1403,7 @@ Ran on `output/phase3_1000` with all `db_1000_*` and standard datasets included.
 | 1000_spectral — shore_a | 0.5 | 0.5 | 0.0 | SYMMETRIC |
 
 **Key finding**: Cross-domain transfers to hardness datasets (rockwell_r, shore_a) appear
-symmetric (?=0.5 each direction) — these datasets are single-score domains with no
+symmetric (τ=0.5 each direction) — these datasets are single-score domains with no
 within-source variance, so transfer analysis collapses to the ceiling level.
 
 The large asymmetry for `study_b_rev ↔ spectral` (0.519) — the reverse study being a strong
@@ -1432,7 +1412,7 @@ information not captured by the forward direction.
 
 ### Training Cost Analysis
 
-- Cross-engine time correlation ?=0.975 — compute cost is an intrinsic policy property
+- Cross-engine time correlation ρ=0.975 — compute cost is an intrinsic policy property
 - Most efficient policy: **grid_search** (22.76 delta/s)
 - Least efficient: **bayesian_ei** (0.0025 delta/s)
 - `km` is 1.5× faster than `1000_study_c_oilpaint_vs_fooddye` per round
@@ -1515,13 +1495,8 @@ uv run python $EXPDIR/13_async_mf_optimizer.py \
   --output-dir "$OUTDIR"
 ```
 
-### What Changes vs v0.3.2
 
-- **9 studies** (was 7): study_b_reverse and study_c_reverse now included
-- **Bug fixes** applied: MFMC CV sign corrected, Q3 fixed-budget allocation, flip_n semantics
-- **Exp 12**: uses all 8 LF sources (not just mixbox/km/ryb) — swarm now beats ensemble in a different direction
-
-### TENKi-1000 Results Summary (v0.4.0)
+### TENKi-1000 Results Summary
 
 Canonical artifacts: `results/tenki_1000/` (do not mix with earlier `results/` runs).
 
@@ -1621,7 +1596,7 @@ budgeted ranking evidence in Layer B.
 
 **Experiment 07 — Frugal twin convergence (7-study canonical run, 6 frugal sources, N_TOTAL=10 fixed)**
 
-Per-study convergence (vs spectral HF). tau@N=1 is from the regenerated `flip_test_summary.json`; tau@N=100 is from `frugal_twin_convergence.json`. Full-data ceiling (N=1000) from flip_test is higher for slow-converging sources (e.g. study_a: 0.703 at N=100 -> 0.833 at N=1000). Use synthesis table (Section 20) for final manuscript values.
+Per-study convergence (vs spectral HF). tau@N=1 from `flip_test_summary.json`; tau@N=100 from `frugal_twin_convergence.json`. Full-data ceiling (N=1000) is higher for slow-converging sources (e.g. study_a: 0.703 at N=100 → 0.833 at N=1000).
 
 | Study | tau@N=1 | tau@N=100 (frugal est.) | full-data ceiling (flip_test) |
 |-------|---------|------------------------|-------------------------------|
@@ -1645,8 +1620,7 @@ Q3 diversity (fixed N_TOTAL=10 — diversity vs budget isolated):
 | 6 | 0.610 | all studies |
 
 **Monotonically decreasing** — with truly fixed budget, concentration always beats diversity.
-Previous v0.3.2 showed a k=2 peak (0.848) because the budget scaled with k (confound).
-With the bug fixed, adding more study types only dilutes the 10 available experiments.
+Adding more study types only dilutes the 10 available experiments.
 
 Q3b (quantity vs diversity at same N_total, best single = mixbox):
 
@@ -1724,10 +1698,6 @@ on tau at every budget. This is the ranking-vs-estimation tradeoff (see §11):
   from the 100–200 LF observations far more efficiently than classical captures it from
   1 —8 HF observations. For the paper's primary metric (ranking quality), report hybrid.
 
-Note: the previous TENKi result (exp 08, v0.3.2) used only the hybrid branch (called
-"MF" without qualification). The MF advantage window B ∈ [2, 9] from that run used
-study_b as LF; study_b is not a paired source. Those results remain valid for the hybrid
-branch with study_b as LF, but should not be cited as MFMC control-variate results.
 
 ---
 
@@ -1746,7 +1716,7 @@ Mixing multiple LF sources can reduce N* vs using any single source:
 
 All three ML models show that concatenating LF features DEGRADES prediction vs HF-only:
 
-| Model | Mean ?MAE (concat vs HF-only) | Verdict |
+| Model | Mean ΔMAE (concat vs HF-only) | Verdict |
 |-------|-------------------------------|---------|
 | Ridge | +5.955 | DEGRADES |
 | RandomForest | +3.426 | DEGRADES |
@@ -1813,7 +1783,7 @@ LF source beliefs: ryb (effective_fidelity=0.932) > mixbox (0.914) > km (0.781).
 One row per knowledge source. All values from canonical `results/tenki_1000/` artifacts.
 
 **Metric sources**:
-- `tau@N=1`: true single-experiment Kendall tau vs spectral, from the regenerated `flip_test_summary.json` (canonical scan starts at N=1) and cross-checked against `frugal_twin_convergence.json`.
+- `tau@N=1`: true single-experiment Kendall tau vs spectral (from `flip_test_summary.json`).
 - `tau@N=10`: ten-experiment tau vs spectral from the TENKi-1000 convergence/transfer artifacts.
 - `ceiling`: best achievable tau at full N vs spectral (same source, from flip_test full data).
 - `bias floor` = 1 − ceiling.
@@ -1846,8 +1816,6 @@ One row per knowledge source. All values from canonical `results/tenki_1000/` ar
 
 6. **All donor scores are strictly ordered**: spectral > study_b > mixbox > ryb > receivers. The hierarchy is fully transitive (no 3-cycles detected).
 
-**Labeling note**: The regenerated `flip_test_summary.json` starts at `N=1`, so
-`tau_source_at_1` is literal single-experiment tau in the current canonical artifact.
 
 ---
 
@@ -1909,7 +1877,7 @@ Step 6 - Validate empirically.
 
 ## 19. Open Questions
 
-### Answered in v0.3
+### Answered
 
 - **Venn region volumes**: Experiment 01 maps all pairwise (and multi-engine) intersection,
   difference, and complement volumes.  The 4-engine intersection non-empty status is now
@@ -1925,8 +1893,6 @@ Step 6 - Validate empirically.
   Conjecture 2.1 PARTIALLY_SUPPORTED, Conjecture 2.2 NOT_SUPPORTED (§17).
 - **TENKi-1000 series**: All experiments 02–3 re-run with 1000-target databases and
   N=[10,20,50,100,200,500,1000] (§18).
-
-### Answered in v0.3.3 (TENKi-1000)
 
 - **Intransitive donor cycles** (Q8 below): Experiment 04 over the full 9-study set
   confirms no 3-cycles — the donor hierarchy is fully transitive.  Blade-Chest cycle
@@ -1978,7 +1944,7 @@ Step 6 - Validate empirically.
    Kendall tau as the match outcome signal (exp 12).  Does the inferred team skill per
    study converge to values consistent with empirical rho and bias floor?
 
-8. ~~**Intransitive donor cycles**~~: Resolved — no cycles in the 9-study set (see v0.3.3).
+8. **Intransitive donor cycles**: Resolved — no cycles in the 9-study set.
 
 9. **Flip N* sensitivity to target difficulty**: N* (robots needed to flip) may differ for
    easy vs hard target colors.  Per-difficulty flip curves would show whether a receiver
