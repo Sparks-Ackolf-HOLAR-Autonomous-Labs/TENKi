@@ -1,4 +1,4 @@
-# Gamut Symmetry: Asymmetric Subsets, Frugal Twins, and Multi-Fidelity Acquisition
+# TENKi: Can More Low-Fidelity Sources Guide Budget-Limited Acquisition in Autonomous Materials Workflows?
 
 **Version**: 0.3.0 (March 2026)  
 **Parent framework**: PEGKi v0.2.0
