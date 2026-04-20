@@ -1,4 +1,4 @@
-﻿# Technical Reference — Gamut Symmetry Extended Project
+﻿# TENKi Technical Reference — Transfer-Ensemble Knowledge Inheritance
 
 **Version**: 0.4.0 (April 2026)
 **Parent framework**: PEGKí v0.2.8
