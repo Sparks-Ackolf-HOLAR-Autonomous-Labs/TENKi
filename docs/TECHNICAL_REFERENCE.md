@@ -148,7 +148,7 @@ With N engines, the Venn diagram decomposes into 2^N − 1 non-empty regions.
 Each region is indexed by a subset S ⊂ {1,...,N} of engines:
 
 ```
-R_S = (?∩{i ∈ S} G_i) \ (?∪{j ∈ S} G_j)
+R_S = (∩{i ∈ S} G_i) \ (∪{j ∉ S} G_j)
 
     = colors reachable by exactly the engines in S
 ```
