@@ -87,8 +87,8 @@ of the full color space that favors one physical model over another.
 | **Difference-asymmetric study** | A study drawn from G_i \ G_j — biased toward what engine i uniquely produces (studies B, C) |
 | **Intersection-asymmetric study** | A study drawn from G_i — G_j — biased toward the consensus region of two engines (study A). Still asymmetric relative to the full color space — the intersection of two biased gamuts is itself biased. |
 
-> **Important**: intersection ≠ symmetric. Study A (mixbox?→YB) has mean=(189,127,121) —> far from the neutral gray (128,128,128). It is symmetric only under the narrow
-> `mixbox?→YB` swap, not relative to the full color space or any high-fidelity reference.
+> **Important**: intersection ≠ symmetric. Study A (mixbox→RYB) has mean=(189,127,121) —> far from the neutral gray (128,128,128). It is symmetric only under the narrow
+> `mixbox→RYB` swap, not relative to the full color space or any high-fidelity reference.
 > Empirically, it has the second-highest bias floor (0.249) among all frugal studies.
 
 The key distinction: "symmetric" here is about **which engines a color region belongs to**, not about
@@ -190,7 +190,7 @@ combined target distribution is invariant under any permutation of engine labels
 
 - For 2 engines: need |targets from G_A\G_B| = |targets from G_B\G_A|
 - For 4 engines: all 15 regions represented in proportion to volume
-- **Minimum K**: 2 asymmetric studies (one for each direction A?→ and B?→)
+- **Minimum K**: 2 asymmetric studies (one for each direction A→ and B→)
 
 ### Definition 4.2 — Coverage-Uniform (Statistical)
 
@@ -268,7 +268,7 @@ Each study database has an associated target color distribution. To compare them
 | Metric | Formula | Interpretation |
 |--------|---------|----------------|
 | Centroid distance | `||mean(D_i) - mean(D_j)||` | How different are the "average" target colors? |
-| KL-divergence | KL(D_i || D_j) | Information distance between distributions |
+| KL-divergence | `KL(D_i ‖ D_j)` | Information distance between distributions |
 | Wasserstein-1 | Earth-mover distance | Minimum effort to transform one distribution into another |
 | Venn overlap fraction | `|D_i ∩ D_j| / |D_i ∪ D_j|` | How much do the target regions overlap? |
 | Asymmetry index | `(V_i - V_j) / (V_i + V_j)` | Signed imbalance between two region volumes |
@@ -287,7 +287,7 @@ Score = 0.0 — one study dominates completely.
 
 The asymmetry of study databases is directly connected to the asymmetric transfer principle
 (§10 of parent doc): when a policy trained on an asymmetric study D_i = G_A \ G_B transfers
-into the "mirror" study D_j = G_B \ G_A, the transfer delta ? will have the opposite sign.
+into the "mirror" study D_j = G_B \ G_A, the transfer delta Δ will have the opposite sign.
 
 This means: **asymmetric gamut subsets produce asymmetric transfer — which is exactly the
 phenomenon the PEGKí rating system was designed to detect.**
@@ -300,7 +300,7 @@ The three set-operation studies in the current database:
 
 | Study | Set-op | Engines | KS type | Asymmetry |
 |-------|--------|---------|---------|-----------|
-| `db_study_a` | mixbox ↔ coloraide_ryb | intersection | K_H_OVERLAP | Symmetric under mixbox?→YB |
+| `db_study_a` | mixbox ↔ coloraide_ryb | intersection | K_H_OVERLAP | Symmetric under mixbox→RYB |
 | `db_study_b` | spectral ↔ coloraide_ryb | difference | K_T | Asymmetric: spectral has, RYB doesn't |
 | `db_study_c` | kubelka_munk ↔ mixbox | difference | K_E | Asymmetric: KM has, mixbox doesn't |
 
@@ -308,9 +308,9 @@ The three set-operation studies in the current database:
 
 | Study | R range | G range | B range | Mean RGB | Character |
 |-------|---------|---------|---------|----------|-----------|
-| **A** (mixbox?→YB) | [22, 254] | [27, 242] | [30, 255] | (189, 127, 121) | Warm/pink — artist consensus warm tones |
-| **B** (spectral?→YB) | [0, 255] | [134, 233] | [128, 221] | (162, 185, 175) | Cool/cyan-green — physics-only colors |
-| **C** (KM?→Mixbox) | [56, 209] | [62, 214] | [44, 207] | (164, 154, 81) | Earth tones — oil-pigment-unique warm browns |
+| **A** (mixbox→RYB) | [22, 254] | [27, 242] | [30, 255] | (189, 127, 121) | Warm/pink — artist consensus warm tones |
+| **B** (spectral→RYB) | [0, 255] | [134, 233] | [128, 221] | (162, 185, 175) | Cool/cyan-green — physics-only colors |
+| **C** (KM→Mixbox) | [56, 209] | [62, 214] | [44, 207] | (164, 154, 81) | Earth tones — oil-pigment-unique warm browns |
 
 The distributions are clearly **in different regions of color space**:
 - Study A is biased toward warm pinks (high R, moderate G,B)
@@ -351,9 +351,9 @@ All three studies are asymmetric gamut subsets. Their symmetry properties differ
 
 | Study | Asymmetry type | Mean RGB | Bias floor vs spectral |
 |-------|---------------|----------|----------------------|
-| A (mixbox?→YB) | Intersection-asymmetric: skewed toward warm artist-consensus colors | (189,127,121) | 0.249 |
-| B (spectral?→YB) | Difference-asymmetric: skewed toward physics-exclusive cool colors | (162,185,175) | 0.105 |
-| C (KM?→Mixbox) | Difference-asymmetric: skewed toward oil-pigment earth tones | (164,154,81) | 0.318 |
+| A (mixbox→RYB) | Intersection-asymmetric: skewed toward warm artist-consensus colors | (189,127,121) | 0.249 |
+| B (spectral→RYB) | Difference-asymmetric: skewed toward physics-exclusive cool colors | (162,185,175) | 0.105 |
+| C (KM→Mixbox) | Difference-asymmetric: skewed toward oil-pigment earth tones | (164,154,81) | 0.318 |
 
 By Definition 4.3 (KS-balanced):
 ```
@@ -368,7 +368,7 @@ By Definition 4.1 (Engine-permutation symmetric):
 - Score = 0.25 — not engine-permutation symmetric
 
 **Frugal twin finding**: The intersection-asymmetric study (A) has a *higher* bias floor than
-the difference-asymmetric study (B), despite being "more symmetric" under the mixbox?→YB swap.
+the difference-asymmetric study (B), despite being "more symmetric" under the mixbox→RYB swap.
 This is because the warm consensus region of two artist models is precisely where high-fidelity
 spectral physics contributes the *least* distinguishing information.
 
@@ -1077,8 +1077,8 @@ vs *receivers* (need many experiments to produce a stable ranking).
 **At N=full** (all experiments), tau values converge to 0.61−0.94: spectral and study_b remain the
 best aligned; study_c and study_a have the lowest ceilings (0.61−0.72).
 
-**Key finding**: study_b (spectral?→YB difference) is a nearly equal donor to spectral itself
-at N=1. The intersection study (study_a, mixbox?→YB) is a strong receiver — it provides little
+**Key finding**: study_b (spectral→RYB difference) is a nearly equal donor to spectral itself
+at N=1. The intersection study (study_a, mixbox→RYB) is a strong receiver — it provides little
 information per experiment about the global policy ranking despite being drawn from the
 "symmetric" region.
 
@@ -1124,11 +1124,11 @@ Synthesises 02 and 03 into a taxonomy:
 | `external_ceiling(X)` | `tau(X_full vs spectral_full)` | Quality of X as spectral proxy |
 | `external_gap(A, B)` | `ext_ceiling(A) − ext_ceiling(B)` | > 0: A already better; < 0: permanent gap |
 | `mutual_gap(A, B, N=1)` | `tau_AB(1) − tau_BA(1)` | Who is donor at N=1 in the mutual scenario |
-| `N*(A?→)` | smallest N where `tau_AB(N) > tau_BA(1)` | Robots needed for A to match B's first experiment |
+| `N*(A→B)` | smallest N where `tau_AB(N) > tau_BA(1)` | Robots needed for A to match B's first experiment |
 | `external_centrality(X)` | mean `ext_ceiling(X)` over all Y | Overall donor quality as spectral proxy |
 | `mutual_centrality(X)` | mean `mutual_gap(X?, N=1)` over Y | Net donor advantage at N=1 across all pairs |
 
-**Cycle detection**: a directed edge A?→ is added when `external_gap(A,B) > ε`.
+**Cycle detection**: a directed edge A→B is added when `external_gap(A,B) > ε`.
 Cycles in this graph = intransitive donor relationships (rock-paper-scissors).
 If no cycles exist, the donor hierarchy is fully transitive (a linear ranking).
 
@@ -1323,8 +1323,8 @@ the online optimizer.
 | Parameter | Value |
 |-----------|-------|
 | Policy mode | `ensemble_mf` |
-| HF source | spectral (3? runtime multiplier) |
-| LF sources | mixbox, km (1? each) |
+| HF source | spectral (3× runtime multiplier) |
+| LF sources | mixbox, km (1× each) |
 | Fidelity levels | [1, 3, 5] (statistical replication) |
 | Budget | 50.0 (HF-equivalent units) |
 | Workers | 2 |
@@ -1354,7 +1354,7 @@ LF source beliefs at termination (per (source, fidelity=5) belief state):
 - mixbox: tau_mean=0.722, rho=0.979, effective_fidelity=0.914
 - km: tau_mean=0.554, rho=0.880, effective_fidelity=0.781
 
-With 10? the budget (500 vs 50), the optimizer recovered the perfect spectral policy ranking.
+With 10× the budget (500 vs 50), the optimizer recovered the perfect spectral policy ranking.
 The 104-target run (budget=50) reached only tau=0.769.
 
 HF policy ranking (by mean best_color_distance_mean, lower = better):
@@ -1411,7 +1411,7 @@ Ran on `output/phase3_1000` with all `db_1000_*` and standard datasets included.
 
 ### Notable Asymmetric Pairs
 
-| Pair | delta A?→ | delta B?→ | |asymmetry| | Verdict |
+| Pair | delta A→ | delta B→ | |asymmetry| | Verdict |
 |------|-----------|-----------|------------|---------|
 | 1000_spectral ↔ spectral | 0.48 | 0.388 | 0.092 | ASYMMETRIC |
 | 1000_spectral ↔ mixbox | 0.226 | 0.435 | 0.209 | ASYMMETRIC |
@@ -1435,7 +1435,7 @@ information not captured by the forward direction.
 - Cross-engine time correlation ?=0.975 — compute cost is an intrinsic policy property
 - Most efficient policy: **grid_search** (22.76 delta/s)
 - Least efficient: **bayesian_ei** (0.0025 delta/s)
-- `km` is 1.5? faster than `1000_study_c_oilpaint_vs_fooddye` per round
+- `km` is 1.5× faster than `1000_study_c_oilpaint_vs_fooddye` per round
 
 ---
 
