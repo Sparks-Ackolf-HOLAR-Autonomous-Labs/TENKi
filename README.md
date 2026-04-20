@@ -109,17 +109,6 @@ Interpretation:
 
 ---
 
-## Key Results Summary
-
-- `study_b` is the best unpaired donor.
-- `mixbox` is the best paired source for direct classical-vs-hybrid comparison.
-- High Pearson `rho` alone is not enough; bias floor and convergence matter.
-- Fixed-budget concentration beats spreading budget across many weaker sources.
-- The hybrid branch is best for ranking-only decisions when a trusted LF source is available.
-- The classical paired branch is best when estimating absolute HF performance levels.
-
----
-
 ## Quick Start
 
 ```bash
