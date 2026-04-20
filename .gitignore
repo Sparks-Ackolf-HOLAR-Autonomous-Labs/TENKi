@@ -32,6 +32,9 @@ env/
 .DS_Store
 Thumbs.db
 
+# Manuscript (not for public repo)
+writing/
+
 # Large generated result directories (reproducible from experiments)
 results/tenki_1000/
 results/exp12_1000/

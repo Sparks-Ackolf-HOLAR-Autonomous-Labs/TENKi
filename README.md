@@ -145,6 +145,5 @@ uv run python experiments/08_multifidelity_allocation.py
 
 ## Documentation
 
-- `TECHNICAL_REFERENCE.md`: technical derivations, saved-result interpretation, and decision rule
-- `writing/main.tex`: manuscript draft
+- [`docs/TECHNICAL_REFERENCE.md`](docs/TECHNICAL_REFERENCE.md): technical derivations, saved-result interpretation, and decision rule
 
