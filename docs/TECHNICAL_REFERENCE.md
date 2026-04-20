@@ -155,9 +155,9 @@ R_S = (∩{i ∈ S} G_i) \ (∪{j ∉ S} G_j)
 
 | N | Total regions | 100% symmetric region | Asymmetric regions |
 |---|---------------|----------------------|-------------------|
-| 2 | 3 | 1 (G_1 ∪ G_2) | 2 |
-| 3 | 7 | 1 (G_1 ∪ G_2 — G_3) | 6 |
-| 4 | 15 | 1 (G_1 ∪ G_2 — G_3 ∪ G_4) | 14 |
+| 2 | 3 | 1 (G_1 ∩ G_2) | 2 |
+| 3 | 7 | 1 (G_1 ∩ G_2 ∩ G_3) | 6 |
+| 4 | 15 | 1 (G_1 ∩ G_2 ∩ G_3 ∩ G_4) | 14 |
 | N | 2^N − 1 | 1 | 2^N − 2 |
 
 **Key result**: There is always exactly **one maximally symmetric region** (the N-way intersection)
@@ -195,13 +195,13 @@ combined target distribution is invariant under any permutation of engine labels
 ### Definition 4.2 — Coverage-Uniform (Statistical)
 
 A collection is **coverage-uniform** if the density of target colors is uniform over the
-union G_1 ∪ ... — G_N.
+union G_1 ∪ ... ∪ G_N.
 
 Each Venn region R_S must be sampled proportionally to its volume.
 
 **Condition**:
 ```
-|{targets in R_S}| / |{total targets}|  =  |R_S| / |G_1 ∪ ... — G_N|
+|{targets in R_S}| / |{total targets}|  =  |R_S| / |G_1 ∪ ... ∪ G_N|
 ```
 
 This is a weaker condition than engine-permutation symmetry — it only requires
@@ -245,7 +245,7 @@ study databases — all Venn regions. For KS-balance, only K = 3 is needed regar
 
 **Is it doable?** Yes, with the following conditions:
 
-1. **The N-way intersection is non-empty**: If G_1 ∪ G_2 ∪ ... — G_N = ∅ no study can
+1. **The N-way intersection is non-empty**: If G_1 ∩ G_2 ∩ ... ∩ G_N = ∅ no study can
    represent the symmetric core. The spectral gamut being the largest (most "physics-complete")
    means its intersection with others may exist but be small.
 
@@ -270,7 +270,7 @@ Each study database has an associated target color distribution. To compare them
 | Centroid distance | `||mean(D_i) - mean(D_j)||` | How different are the "average" target colors? |
 | KL-divergence | KL(D_i || D_j) | Information distance between distributions |
 | Wasserstein-1 | Earth-mover distance | Minimum effort to transform one distribution into another |
-| Venn overlap fraction | `|D_i — D_j| / |D_i — D_j|` | How much do the target regions overlap? |
+| Venn overlap fraction | `|D_i ∩ D_j| / |D_i ∪ D_j|` | How much do the target regions overlap? |
 | Asymmetry index | `(V_i - V_j) / (V_i + V_j)` | Signed imbalance between two region volumes |
 
 **Symmetry score of a collection**:
