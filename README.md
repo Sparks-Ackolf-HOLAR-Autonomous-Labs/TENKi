@@ -25,15 +25,14 @@ TenKi answers that question through three linked sub-questions.
 
 How many asymmetric pieces make a symmetric whole?
 
-Given study databases drawn from intersections, differences, and complements of the engine
+Given study databases drawn from intersections, differences, and complements of the source
 gamuts, what is the minimum collection that treats the knowledge-space types fairly?
 
 **Current answer**:
 
-- `K = 3` achieves Knowledge-Space balance: one overlap source, one transfer source, one
-  exclusion source
-- `K = 15` is required for full engine-permutation symmetry with four engines
-- the current studies A, B, and C are KS-balanced but not engine-permutation symmetric
+- A small number of sources achieves Knowledge-Space balance when each covers a distinct region type: overlap, transfer, and exclusion
+- Full engine-permutation symmetry requires a larger collection
+- A KS-balanced set is achievable without full permutation symmetry
 
 ### Q2: Empirical
 
@@ -41,11 +40,9 @@ How many cheap measurements are needed to match the ranking quality of the expen
 
 **Current answer**:
 
-- `study_b` is the best unpaired frugal proxy and reaches `tau >= 0.80` in about 10 measurements
-- all frugal sources hit a bias floor: beyond that point, more measurements do not remove the
-  underlying physics gap
-- `study_a` is the clearest warning case: an apparently favorable overlap region can still be a
-  poor ranking donor
+- The best frugal proxy reaches strong ranking agreement with relatively few measurements
+- All frugal sources hit a bias floor: beyond that point, more measurements do not remove the underlying physics gap
+- An apparently favorable overlap region can still be a poor ranking donor
 
 ### Q3: Engineering
 
@@ -53,9 +50,9 @@ How should high-fidelity and low-fidelity budget be split?
 
 **Current answer**:
 
-- for ranking, a good low-fidelity source can help substantially
-- for absolute scalar estimation, the classical paired control-variate branch is the cleaner choice
-- concentration on the best source beats naive diversity under fixed budget
+- For ranking, a good low-fidelity source can help substantially
+- For absolute scalar estimation, the classical paired control-variate branch is the cleaner choice
+- Concentrating budget on the best source beats spreading it across many weaker ones
 
 ---
 
@@ -80,17 +77,13 @@ parent framework.
 
 ## Three Studies in the Current Database
 
-| Study | Set-op | KS type | Bias floor vs spectral |
-|------|------|------|------|
-| **A** | `mixbox ∩ RYB` | `K_H_OVERLAP` | 0.249 |
-| **B** | `spectral \ RYB` | `K_T` | 0.105 |
-| **C** | `KM \ mixbox` | `K_E` | 0.318 |
+The benchmark includes three cross-source study databases, each covering a distinct region of design space:
 
-Interpretation:
-
-- Study A is an overlap source, but overlap does not mean neutral or trustworthy
-- Study B is the strongest frugal donor in the current benchmark
-- Study C is the most divergent and carries the largest persistent gap
+| KS type | Region | Interpretation |
+|------|------|------|
+| Overlap | Sources agree | Shared coverage does not guarantee trustworthy transfer |
+| Transfer | One source leads | Strongest frugal donor in the benchmark |
+| Exclusion | Sources diverge | Most divergent; largest persistent bias gap |
 
 ---
 
