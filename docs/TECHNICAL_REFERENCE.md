@@ -267,10 +267,10 @@ Each study database has an associated target color distribution. To compare them
 
 | Metric | Formula | Interpretation |
 |--------|---------|----------------|
-| Centroid distance | `||mean(D_i) - mean(D_j)||` | How different are the "average" target colors? |
+| Centroid distance | `‖mean(D_i) − mean(D_j)‖` | How different are the "average" target colors? |
 | KL-divergence | `KL(D_i ‖ D_j)` | Information distance between distributions |
 | Wasserstein-1 | Earth-mover distance | Minimum effort to transform one distribution into another |
-| Venn overlap fraction | `|D_i ∩ D_j| / |D_i ∪ D_j|` | How much do the target regions overlap? |
+| Venn overlap fraction | `\|D_i ∩ D_j\| / \|D_i ∪ D_j\|` | How much do the target regions overlap? |
 | Asymmetry index | `(V_i - V_j) / (V_i + V_j)` | Signed imbalance between two region volumes |
 
 **Symmetry score of a collection**:
